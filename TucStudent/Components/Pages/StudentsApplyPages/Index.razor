@@ -3,15 +3,13 @@
 @inject TucStudent.Data.TucStudentContext DB
 @using TucStudent
 
-<PageTitle>Index</PageTitle>
-
-<h1>Index</h1>
+<PageTitle>Admin</PageTitle>
 
 <p>
     <a href="studentsapplies/create">Create New</a>
 </p>
 
-<QuickGrid Class="table" Items="DB.StudentsApply">
+<QuickGrid Class="table" Items="FilteredStudents">
     <PropertyColumn Property="student => student.firstName" Title="First Name" Sortable="true" />
     <PropertyColumn Property="student => student.lastName" Title="Last Name" Sortable="true"/>
     <PropertyColumn Property="student => student.email" Title="Email" Sortable="true" />
@@ -32,9 +30,25 @@
 </QuickGrid>
 
 @code {
-    int yearFilter = 100;
+    int yearFilter = 0;
     DateTime today = DateTime.Now;
 
-    IQueryable<StudentsApply> FilterStudents => DB.StudentsApply.Where(
-        student => today.Year - student.birthDate.Year > yearFilter);
+
+    public IQueryable<StudentsApply> ShowStudentsApply()
+    {
+        if (yearFilter != 0)
+        {
+            var studentsApply = DB.StudentsApply
+            .Where(s => today.Year - s.birthDate.Year == yearFilter);
+            return studentsApply;
+        }
+        else
+        {
+            var studentsApply = DB.StudentsApply;
+
+            return studentsApply;
+        }
+    }
+    IQueryable<StudentsApply> FilteredStudents => ShowStudentsApply();
+
 }
