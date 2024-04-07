@@ -1,0 +1,101 @@
+﻿@page "/StudentsApplies/edit"
+@inject TucStudent.Data.TucStudentContext DB
+@using TucStudent
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h4>StudentsApply</h4>
+<hr />
+@if (StudentsApply is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="StudentsApply" OnValidSubmit="UpdateStudentsApply" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <input type="hidden" name="StudentsApply.id" value="@StudentsApply.id" />
+                <div class="mb-3">
+                    <label for="firstname" class="form-label">First Name:</label>
+                    <InputText id="firstname" @bind-Value="StudentsApply.firstName" class="form-control" />
+                    <ValidationMessage For="() => StudentsApply.firstName" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="lastname" class="form-label">Last Name:</label>
+                    <InputText id="lastname" @bind-Value="StudentsApply.lastName" class="form-control" />
+                    <ValidationMessage For="() => StudentsApply.lastName" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email:</label>
+                    <InputText id="email" @bind-Value="StudentsApply.email" class="form-control" />
+                    <ValidationMessage For="() => StudentsApply.email" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="birthdate" class="form-label">Birthdate:</label>
+                    <InputDate id="birthdate" @bind-Value="StudentsApply.birthDate" class="form-control" />
+                    <ValidationMessage For="() => StudentsApply.birthDate" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/studentsapplies">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public int id { get; set; }
+
+    [SupplyParameterFromForm]
+    public StudentsApply? StudentsApply { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        StudentsApply ??= await DB.StudentsApply.FirstOrDefaultAsync(m => m.id == id);
+
+        if (StudentsApply is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task UpdateStudentsApply()
+    {
+        DB.Attach(StudentsApply!).State = EntityState.Modified;
+
+        try
+        {
+            await DB.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!StudentsApplyExists(StudentsApply!.id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/studentsapplies");
+    }
+
+    bool StudentsApplyExists(int id)
+    {
+        return DB.StudentsApply.Any(e => e.id == id);
+    }
+}

@@ -1,0 +1,51 @@
+﻿@page "/studentsapplies/details"
+@inject TucStudent.Data.TucStudentContext DB
+@using TucStudent
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h4>StudentsApply</h4>
+    <hr />
+    @if (studentsapply is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">firstName</dt>
+            <dd class="col-sm-10">@studentsapply.firstName</dd>
+            <dt class="col-sm-2">lastName</dt>
+            <dd class="col-sm-10">@studentsapply.lastName</dd>
+            <dt class="col-sm-2">email</dt>
+            <dd class="col-sm-10">@studentsapply.email</dd>
+            <dt class="col-sm-2">birthDate</dt>
+            <dd class="col-sm-10">@studentsapply.birthDate</dd>
+        </dl>
+        <div>
+            <a href="@($"/studentsapplies/edit?id={studentsapply.id}")">Edit</a> |
+            <a href="@($"/studentsapplies")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    StudentsApply? studentsapply;
+
+    [SupplyParameterFromQuery]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        studentsapply = await DB.StudentsApply.FirstOrDefaultAsync(m => m.id == id);
+
+        if (studentsapply is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

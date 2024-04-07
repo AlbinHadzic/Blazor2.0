@@ -1,0 +1,40 @@
+﻿@page "/studentsapplies"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@inject TucStudent.Data.TucStudentContext DB
+@using TucStudent
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="studentsapplies/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="DB.StudentsApply">
+    <PropertyColumn Property="student => student.firstName" Title="First Name" Sortable="true" />
+    <PropertyColumn Property="student => student.lastName" Title="Last Name" Sortable="true"/>
+    <PropertyColumn Property="student => student.email" Title="Email" Sortable="true" />
+    <PropertyColumn Property="student => student.birthDate" Title="Birthdate" Sortable="true" >
+        <ColumnOptions>
+            <div>
+                <label>Search age</label>
+                <input type="number" @bind="yearFilter" @bind:event="oninput" />
+            </div>
+        </ColumnOptions>
+    </PropertyColumn>
+
+    <TemplateColumn Context="studentsapply">
+        <a href="@($"studentsapplies/edit?id={studentsapply.id}")">Edit</a> |
+        <a href="@($"studentsapplies/details?id={studentsapply.id}")">Details</a> |
+        <a href="@($"studentsapplies/delete?id={studentsapply.id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    int yearFilter = 100;
+    DateTime today = DateTime.Now;
+
+    IQueryable<StudentsApply> FilterStudents => DB.StudentsApply.Where(
+        student => today.Year - student.birthDate.Year > yearFilter);
+}

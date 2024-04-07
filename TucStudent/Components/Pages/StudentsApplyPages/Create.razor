@@ -1,0 +1,59 @@
+﻿@page "/studentsapplies/create"
+@inject TucStudent.Data.TucStudentContext DB
+@using TucStudent
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h4>StudentsApply</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="StudentsApply" OnValidSubmit="AddStudentsApply" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            <div class="mb-3">
+                <label for="firstname" class="form-label">First Name:</label> 
+                <InputText id="firstname" @bind-Value="StudentsApply.firstName" class="form-control" /> 
+                <ValidationMessage For="() => StudentsApply.firstName" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="lastname" class="form-label">Last Name:</label> 
+                <InputText id="lastname" @bind-Value="StudentsApply.lastName" class="form-control" /> 
+                <ValidationMessage For="() => StudentsApply.lastName" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label> 
+                <InputText id="email" @bind-Value="StudentsApply.email" class="form-control" /> 
+                <ValidationMessage For="() => StudentsApply.email" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="birthdate" class="form-label">Birthdate:</label> 
+                <InputDate id="birthdate" @bind-Value="StudentsApply.birthDate" class="form-control" /> 
+                <ValidationMessage For="() => StudentsApply.birthDate" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/studentsapplies">Back to List</a>
+</div>
+
+@code {
+
+    [SupplyParameterFromForm]
+    public StudentsApply StudentsApply { get; set; } = new();
+
+    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
+    public async Task AddStudentsApply()
+    {
+        DB.StudentsApply.Add(StudentsApply);
+        await DB.SaveChangesAsync();
+        NavigationManager.NavigateTo("/studentsapplies");
+        StateHasChanged();
+    }
+}
